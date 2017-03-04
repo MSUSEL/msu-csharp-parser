@@ -29,7 +29,6 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.ExecutionException;
@@ -44,6 +43,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.sparqline.codetree.CodeTree;
 import com.sparqline.codetree.node.FileNode;
 import com.sparqline.parsers.csharp.CSharp6Lexer;
@@ -74,7 +74,7 @@ public class CSharpParserTest {
 
     public static List<String> fileList(final String root)
     {
-        final List<String> fileNames = new ArrayList<>();
+        final List<String> fileNames = Lists.newArrayList();
         final Stack<String> directories = new Stack<>();
         directories.push(root);
 
@@ -120,13 +120,13 @@ public class CSharpParserTest {
         {
             final ExecutorService executor = Executors
                     .newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
-            final List<Future<?>> futures = new ArrayList<>();
+            final List<Future<?>> futures = Lists.newArrayList();
             for (final String file : fileNames)
             {
                 futures.add(executor.submit(() -> {
                     try
                     {
-                        final FileNode node = new FileNode(file);
+                        final FileNode node = FileNode.builder(file).create();
                         final CSharpParserTest pt = new CSharpParserTest();
                         final CSharp6Parser parser = pt.loadFile(file);
                         final Compilation_unitContext cuContext = parser.compilation_unit();
@@ -134,7 +134,7 @@ public class CSharpParserTest {
                         final CSharpCodeTreeBuilder listener = new CSharpCodeTreeBuilder(node);
                         walker.walk(listener, cuContext);
 
-                        tree.addFile(node);
+                        tree.getProject().addFile(node);
                     }
                     catch (final IOException e)
                     {
@@ -161,7 +161,6 @@ public class CSharpParserTest {
             CSharpParserTest.LOG.warn(e.getMessage(), e);
         }
         final long end = System.currentTimeMillis();
-        tree.printTree();
 
         System.out.println("\nParse took: " + (end - start) + " ms");
     }

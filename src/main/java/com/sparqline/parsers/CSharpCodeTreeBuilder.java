@@ -185,9 +185,18 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
         if (!methods.isEmpty())
         {
             MethodNode mn = methods.peek();
-            StatementNode sn = new StatementNode.Builder(type)
-                    .range(ctx.getStart().getLine(), ctx.getStop().getLine())
-                    .create();
+            int start = ctx.getStart().getLine();
+            int end = ctx.getStop().getLine();
+
+            StatementNode sn = null;
+            if (start > end)
+            {
+                sn = StatementNode.builder(type).range(start).create();
+            }
+            else
+            {
+                sn = StatementNode.builder(type).range(start, end).create();
+            }
             mn.addStatement(sn);
         }
     }
@@ -246,7 +255,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
         final int start = ctx.getStart().getLine();
         final int end = ctx.getStop().getLine();
 
-        final TypeNode ent = new TypeNode.Builder(fullName == null ? name : fullName, name).range(start, end).create();
+        final TypeNode ent = TypeNode.builder(fullName == null ? name : fullName, name).range(start, end).create();
         file.addType(ent);
         types.push(ent);
 
@@ -281,7 +290,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
         final int start = ctx.getStart().getLine();
         final int end = ctx.getStop().getLine();
 
-        final MethodNode ent = new MethodNode.Builder(fullName, name).constructor().range(start, end).create();
+        final MethodNode ent = MethodNode.builder(fullName, name).constructor().range(start, end).create();
         types.peek().addMethod(ent);
         methods.push(ent);
 
@@ -409,7 +418,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
         final String fullName = namespaces.isEmpty() ? name : namespaces.peek() + "." + name;
         final int start = ctx.getStart().getLine();
         final int end = ctx.getStop().getLine();
-        final TypeNode ent = new TypeNode.Builder(fullName, name).range(start, end).create();
+        final TypeNode ent = TypeNode.builder(fullName, name).range(start, end).create();
 
         file.addType(ent);
         types.push(ent);
@@ -510,7 +519,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
         final int start = ctx.getStart().getLine();
         final int end = ctx.getStop().getLine();
 
-        final TypeNode ent = new TypeNode.Builder(fullName, name).range(start, end).create();
+        final TypeNode ent = TypeNode.builder(fullName, name).range(start, end).create();
 
         types.push(ent);
         file.addType(ent);
@@ -531,7 +540,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
         final String fullName = types.peek().getQIdentifier() + "#" + name;
         final int start = ctx.getStart().getLine();
         final int end = ctx.getStop().getLine();
-        final MethodNode ent = new MethodNode.Builder(fullName, name).range(start, end).create();
+        final MethodNode ent = MethodNode.builder(fullName, name).range(start, end).create();
 
         types.peek().addMethod(ent);
 
@@ -575,15 +584,18 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
     public void enterMethod_declaration2(final Method_declaration2Context ctx)
     {
         final Method_member_nameContext mmctx = ctx.method_member_name();
-        String name = mmctx.getText();
+        String name = mmctx == null ? "<METHOD>" : mmctx.getText();
 
         name += "(" + getParams(ctx.formal_parameter_list()) + ")";
         final String fullName = types.peek().getQIdentifier() + "#" + name;
 
-        final int start = ctx.getStart().getLine();
-        final int end = ctx.getStop().getLine();
+        int start = ctx.getStart().getLine();
+        int end = ctx.getStop().getLine();
 
-        final MethodNode ent = new MethodNode.Builder(fullName, name).range(start, end).create();
+        if (end < start)
+            end = start;
+
+        final MethodNode ent = MethodNode.builder(fullName, name).range(start, end).create();
         types.peek().addMethod(ent);
         methods.push(ent);
 
@@ -661,7 +673,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
         final int start = ctx.getStart().getLine();
         final int end = ctx.getStop().getLine();
         final String fullName = types.peek().getQIdentifier() + "#" + op;
-        final MethodNode ent = new MethodNode.Builder(fullName, op).range(start, end).create();
+        final MethodNode ent = MethodNode.builder(fullName, op).range(start, end).create();
 
         methods.push(ent);
         types.peek().addMethod(ent);
@@ -752,7 +764,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
         final int end = ctx.getStop().getLine();
 
         final String fullName = namespaces.isEmpty() ? name : namespaces.peek() + "." + name;
-        final TypeNode ent = new TypeNode.Builder(fullName, name).range(start, end).create();
+        final TypeNode ent = TypeNode.builder(fullName, name).range(start, end).create();
         types.push(ent);
         file.addType(ent);
 

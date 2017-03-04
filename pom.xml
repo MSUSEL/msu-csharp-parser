@@ -3,123 +3,64 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.sparqline.parsers.csharp</groupId>
 	<artifactId>sparqline-csharp-parser</artifactId>
-	<version>1.0</version>
+	<version>${sparqline.version}</version>
 	<name>SparQLine Analytics C# Parser</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.min.version>1.8</jdk.min.version>
-		<sparqline.version>1.0.12</sparqline.version>
+		<sparqline.version>1.1.1</sparqline.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>log4j-over-slf4j</artifactId>
+			<version>1.7.12</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
+			<version>1.7.12</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.12</version>
 		</dependency>
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr4-runtime</artifactId>
+			<version>4.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
 			<scope>test</scope>
+			<version>1.10.19</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
+			<version>4.12</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jdt</groupId>
 			<artifactId>org.eclipse.jdt.annotation</artifactId>
+			<version>2.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sparqline.quamoco</groupId>
 			<artifactId>sparqline-codetree</artifactId>
+			<version>${sparqline.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sparqline</groupId>
 			<artifactId>sparqline-loc-metrics</artifactId>
+			<version>${sparqline.version}</version>
 		</dependency>
 	</dependencies>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>log4j-over-slf4j</artifactId>
-				<version>1.7.12</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
-				<version>1.7.12</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-simple</artifactId>
-				<version>1.7.12</version>
-			</dependency>
-			<dependency>
-				<groupId>org.antlr</groupId>
-				<artifactId>antlr4-runtime</artifactId>
-				<version>4.5</version>
-			</dependency>
-			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-all</artifactId>
-				<version>1.10.19</version>
-			</dependency>
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.12</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.code.gson</groupId>
-				<artifactId>gson</artifactId>
-				<version>2.5</version>
-			</dependency>
-			<dependency>
-				<groupId>com.thoughtworks.xstream</groupId>
-				<artifactId>xstream</artifactId>
-				<version>1.4.8</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>19.0</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jdt</groupId>
-				<artifactId>org.eclipse.jdt.annotation</artifactId>
-				<version>2.1.0</version>
-			</dependency>
-			<dependency>
-				<groupId>com.sparqline.quamoco</groupId>
-				<artifactId>sparqline-codetree</artifactId>
-				<version>${sparqline.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.sparqline</groupId>
-				<artifactId>sparqline-loc-metrics</artifactId>
-				<version>1.0</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<build>
 		<plugins>
