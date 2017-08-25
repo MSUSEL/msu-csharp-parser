@@ -1,5 +1,5 @@
 // Generated from csharp/CSharp6.g4 by ANTLR 4.5.1
-package com.sparqline.parsers.csharp;
+package edu.montana.gsoc.msusel.parsers.csharp;
 
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 

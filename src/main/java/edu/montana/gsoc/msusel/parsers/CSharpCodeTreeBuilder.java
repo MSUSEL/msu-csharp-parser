@@ -1,8 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * SparQLine C# Parser
- * Copyright (c) 2015-2017 Isaac Griffith, SparQLine Analytics, LLC
+ * MSUSEL C# Parser
+ * Copyright (c) 2015-2017 Montana State University, Gianforte School of Computing,
+ * Software Engineering Laboratory
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.sparqline.parsers;
+package edu.montana.gsoc.msusel.parsers;
 
 import java.util.List;
 import java.util.Stack;
@@ -32,103 +33,104 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sparqline.codetree.INode;
-import com.sparqline.codetree.node.FieldNode;
-import com.sparqline.codetree.node.FileNode;
-import com.sparqline.codetree.node.MethodNode;
-import com.sparqline.codetree.node.StatementNode;
-import com.sparqline.codetree.node.StatementType;
-import com.sparqline.codetree.node.TypeNode;
 import com.sparqline.metrics.loc.LoCCounter;
-import com.sparqline.parsers.csharp.CSharp6BaseListener;
-import com.sparqline.parsers.csharp.CSharp6Parser.Accessor_declarationsContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Add_accessor_declarationContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Break_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Checked_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Class_bodyContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Class_definitionContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Compilation_unitContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Constructor_bodyContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Constructor_declaration2Context;
-import com.sparqline.parsers.csharp.CSharp6Parser.Constructor_declarationContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Constructor_declaratorContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Continue_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Declaration_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Delegate_declarationContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Delegate_definitionContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Delegate_typeContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Destructor_bodyContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Destructor_declarationContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Do_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Embedded_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Embedded_statement_unsafeContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Empty_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Enum_bodyContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Enum_definitionContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Enum_member_declarationContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Event_declaration2Context;
-import com.sparqline.parsers.csharp.CSharp6Parser.Event_declarationContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Expression_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Field_declaration2Context;
-import com.sparqline.parsers.csharp.CSharp6Parser.Fixed_parameterContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Fixed_parametersContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Fixed_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.For_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Foreach_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Formal_parameter_listContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Goto_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.IdentifierContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.If_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Indexer_declaration2Context;
-import com.sparqline.parsers.csharp.CSharp6Parser.Indexer_declarationContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Indexer_declaratorContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Interface_bodyContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Interface_definitionContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Interface_event_declaration2Context;
-import com.sparqline.parsers.csharp.CSharp6Parser.Interface_event_declarationContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Interface_indexer_declaration2Context;
-import com.sparqline.parsers.csharp.CSharp6Parser.Interface_indexer_declarationContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Interface_method_declaration2Context;
-import com.sparqline.parsers.csharp.CSharp6Parser.Interface_method_declarationContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Interface_property_declaration2Context;
-import com.sparqline.parsers.csharp.CSharp6Parser.Interface_property_declarationContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Labeled_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Local_constant_declarationContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Lock_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Member_declaratorContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Member_nameContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Method_bodyContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Method_declaration2Context;
-import com.sparqline.parsers.csharp.CSharp6Parser.Method_declarationContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Method_headerContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Method_member_nameContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Namespace_bodyContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Namespace_declarationContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Namespace_member_declarationContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Namespace_nameContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Operator_bodyContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Operator_declaration2Context;
-import com.sparqline.parsers.csharp.CSharp6Parser.Operator_declarationContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Overloadable_binary_operatorContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Overloadable_operatorContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Overloadable_unary_operatorContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Parameter_arrayContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Property_declaration2Context;
-import com.sparqline.parsers.csharp.CSharp6Parser.Property_declarationContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Selection_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Simple_embedded_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Static_constructor_declarationContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Struct_bodyContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Struct_definitionContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Switch_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Throw_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Try_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Unary_operator_declaratorContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Unchecked_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Unsafe_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Using_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.While_statementContext;
-import com.sparqline.parsers.csharp.CSharp6Parser.Yield_statementContext;
+
+import edu.montana.gsoc.msusel.INode;
+import edu.montana.gsoc.msusel.node.FieldNode;
+import edu.montana.gsoc.msusel.node.FileNode;
+import edu.montana.gsoc.msusel.node.MethodNode;
+import edu.montana.gsoc.msusel.node.StatementNode;
+import edu.montana.gsoc.msusel.node.StatementType;
+import edu.montana.gsoc.msusel.node.TypeNode;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6BaseListener;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Accessor_declarationsContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Add_accessor_declarationContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Break_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Checked_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Class_bodyContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Class_definitionContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Compilation_unitContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Constructor_bodyContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Constructor_declaration2Context;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Constructor_declarationContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Constructor_declaratorContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Continue_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Declaration_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Delegate_declarationContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Delegate_definitionContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Delegate_typeContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Destructor_bodyContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Destructor_declarationContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Do_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Embedded_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Embedded_statement_unsafeContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Empty_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Enum_bodyContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Enum_definitionContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Enum_member_declarationContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Event_declaration2Context;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Event_declarationContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Expression_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Field_declaration2Context;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Fixed_parameterContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Fixed_parametersContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Fixed_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.For_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Foreach_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Formal_parameter_listContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Goto_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.IdentifierContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.If_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Indexer_declaration2Context;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Indexer_declarationContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Indexer_declaratorContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_bodyContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_definitionContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_event_declaration2Context;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_event_declarationContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_indexer_declaration2Context;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_indexer_declarationContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_method_declaration2Context;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_method_declarationContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_property_declaration2Context;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_property_declarationContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Labeled_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Local_constant_declarationContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Lock_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Member_declaratorContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Member_nameContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Method_bodyContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Method_declaration2Context;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Method_declarationContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Method_headerContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Method_member_nameContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Namespace_bodyContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Namespace_declarationContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Namespace_member_declarationContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Namespace_nameContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Operator_bodyContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Operator_declaration2Context;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Operator_declarationContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Overloadable_binary_operatorContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Overloadable_operatorContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Overloadable_unary_operatorContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Parameter_arrayContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Property_declaration2Context;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Property_declarationContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Selection_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Simple_embedded_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Static_constructor_declarationContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Struct_bodyContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Struct_definitionContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Switch_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Throw_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Try_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Unary_operator_declaratorContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Unchecked_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Unsafe_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Using_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.While_statementContext;
+import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Yield_statementContext;
 
 /**
  * Using the parser, this class incrementally builds a CodeTree one file at a

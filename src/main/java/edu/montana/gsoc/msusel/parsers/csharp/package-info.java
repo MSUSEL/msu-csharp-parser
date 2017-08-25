@@ -20,4 +20,4 @@
  *
  * @author Isaac Griffith
  */
-package com.sparqline.parsers.csharp;
+package edu.montana.gsoc.msusel.parsers.csharp;

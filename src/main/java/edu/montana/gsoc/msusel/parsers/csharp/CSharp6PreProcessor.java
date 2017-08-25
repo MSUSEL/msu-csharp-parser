@@ -1,5 +1,5 @@
-// Generated from csharp/CSharp6.g4 by ANTLR 4.5.1
-package com.sparqline.parsers.csharp;
+// Generated from csharp/CSharp6PreProcessor.g4 by ANTLR 4.5.1
+package edu.montana.gsoc.msusel.parsers.csharp;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Lexer;
@@ -13,7 +13,7 @@ import org.antlr.v4.runtime.atn.PredictionContextCache;
 import org.antlr.v4.runtime.dfa.DFA;
 
 @SuppressWarnings({ "all", "warnings", "unchecked", "unused", "cast" })
-public class CSharp6Lexer extends Lexer {
+public class CSharp6PreProcessor extends Lexer {
 
 	static {
 		RuntimeMetaData.checkVersion("4.5.1", RuntimeMetaData.VERSION);
@@ -124,8 +124,8 @@ public class CSharp6Lexer extends Lexer {
 			"OP_MOD_ASSIGNMENT", "OP_AND_ASSIGNMENT", "OP_OR_ASSIGNMENT", "OP_XOR_ASSIGNMENT", "OP_LEFT_SHIFT",
 			"OP_LEFT_SHIFT_ASSIGNMENT", "OP_STRING_INTERP", "QUOTE", "DOUBLE_QUOTE", "BACK_SLASH", "DOUBLE_BACK_SLASH",
 			"SHARP" };
-	public static final Vocabulary VOCABULARY = new VocabularyImpl(CSharp6Lexer._LITERAL_NAMES,
-			CSharp6Lexer._SYMBOLIC_NAMES);
+	public static final Vocabulary VOCABULARY = new VocabularyImpl(CSharp6PreProcessor._LITERAL_NAMES,
+			CSharp6PreProcessor._SYMBOLIC_NAMES);
 
 	/**
 	 * @deprecated Use {@link #VOCABULARY} instead.
@@ -134,15 +134,15 @@ public class CSharp6Lexer extends Lexer {
 	public static final String[] tokenNames;
 
 	static {
-		tokenNames = new String[CSharp6Lexer._SYMBOLIC_NAMES.length];
-		for (int i = 0; i < CSharp6Lexer.tokenNames.length; i++) {
-			CSharp6Lexer.tokenNames[i] = CSharp6Lexer.VOCABULARY.getLiteralName(i);
-			if (CSharp6Lexer.tokenNames[i] == null) {
-				CSharp6Lexer.tokenNames[i] = CSharp6Lexer.VOCABULARY.getSymbolicName(i);
+		tokenNames = new String[CSharp6PreProcessor._SYMBOLIC_NAMES.length];
+		for (int i = 0; i < CSharp6PreProcessor.tokenNames.length; i++) {
+			CSharp6PreProcessor.tokenNames[i] = CSharp6PreProcessor.VOCABULARY.getLiteralName(i);
+			if (CSharp6PreProcessor.tokenNames[i] == null) {
+				CSharp6PreProcessor.tokenNames[i] = CSharp6PreProcessor.VOCABULARY.getSymbolicName(i);
 			}
 
-			if (CSharp6Lexer.tokenNames[i] == null) {
-				CSharp6Lexer.tokenNames[i] = "<INVALID>";
+			if (CSharp6PreProcessor.tokenNames[i] == null) {
+				CSharp6PreProcessor.tokenNames[i] = "<INVALID>";
 			}
 		}
 	}
@@ -150,44 +150,44 @@ public class CSharp6Lexer extends Lexer {
 	@Override
 	@Deprecated
 	public String[] getTokenNames() {
-		return CSharp6Lexer.tokenNames;
+		return CSharp6PreProcessor.tokenNames;
 	}
 
 	@Override
 
 	public Vocabulary getVocabulary() {
-		return CSharp6Lexer.VOCABULARY;
+		return CSharp6PreProcessor.VOCABULARY;
 	}
 
-	public CSharp6Lexer(final CharStream input) {
+	public CSharp6PreProcessor(final CharStream input) {
 		super(input);
-		_interp = new LexerATNSimulator(this, CSharp6Lexer._ATN, CSharp6Lexer._decisionToDFA,
-				CSharp6Lexer._sharedContextCache);
+		_interp = new LexerATNSimulator(this, CSharp6PreProcessor._ATN, CSharp6PreProcessor._decisionToDFA,
+				CSharp6PreProcessor._sharedContextCache);
 	}
 
 	@Override
 	public String getGrammarFileName() {
-		return "CSharp6.g4";
+		return "CSharp6PreProcessor.g4";
 	}
 
 	@Override
 	public String[] getRuleNames() {
-		return CSharp6Lexer.ruleNames;
+		return CSharp6PreProcessor.ruleNames;
 	}
 
 	@Override
 	public String getSerializedATN() {
-		return CSharp6Lexer._serializedATN;
+		return CSharp6PreProcessor._serializedATN;
 	}
 
 	@Override
 	public String[] getModeNames() {
-		return CSharp6Lexer.modeNames;
+		return CSharp6PreProcessor.modeNames;
 	}
 
 	@Override
 	public ATN getATN() {
-		return CSharp6Lexer._ATN;
+		return CSharp6PreProcessor._ATN;
 	}
 
 	public static final String _serializedATN = "\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\2\u00aa\u082e\b\1\4"
@@ -1004,12 +1004,12 @@ public class CSharp6Lexer extends Lexer {
 			+ "\u0692\u069a\u069f\u06a6\u06ae\u06b2\u06bc\u06c0\u06c5\u06da\u06e0\u06e4"
 			+ "\u06e9\u06f5\u06f8\u06fd\u0700\u0705\u070a\u070e\u071e\u0737\u0752\u0757"
 			+ "\u0760\u0764\u0766\u076f\u0779\u0782\u078b\u0792\3\2\3\2";
-	public static final ATN _ATN = new ATNDeserializer().deserialize(CSharp6Lexer._serializedATN.toCharArray());
+	public static final ATN _ATN = new ATNDeserializer().deserialize(CSharp6PreProcessor._serializedATN.toCharArray());
 
 	static {
-		_decisionToDFA = new DFA[CSharp6Lexer._ATN.getNumberOfDecisions()];
-		for (int i = 0; i < CSharp6Lexer._ATN.getNumberOfDecisions(); i++) {
-			CSharp6Lexer._decisionToDFA[i] = new DFA(CSharp6Lexer._ATN.getDecisionState(i), i);
+		_decisionToDFA = new DFA[CSharp6PreProcessor._ATN.getNumberOfDecisions()];
+		for (int i = 0; i < CSharp6PreProcessor._ATN.getNumberOfDecisions(); i++) {
+			CSharp6PreProcessor._decisionToDFA[i] = new DFA(CSharp6PreProcessor._ATN.getDecisionState(i), i);
 		}
 	}
 }
