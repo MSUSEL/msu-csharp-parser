@@ -33,9 +33,8 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sparqline.metrics.loc.LoCCounter;
-
 import edu.montana.gsoc.msusel.INode;
+import edu.montana.gsoc.msusel.metrics.loc.LoCCounter;
 import edu.montana.gsoc.msusel.node.FieldNode;
 import edu.montana.gsoc.msusel.node.FileNode;
 import edu.montana.gsoc.msusel.node.MethodNode;
