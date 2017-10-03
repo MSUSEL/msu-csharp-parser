@@ -1,55 +1,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>edu.montana.gsoc.msusel</groupId>
+        <artifactId>msusel-parent</artifactId>
+        <version>1.1.1</version>
+    </parent>
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.montana.gsoc.msusel.parsers</groupId>
 	<artifactId>msusel-csharp-parser</artifactId>
 	<version>${msusel.version}</version>
 	<name>MSUSEL C# Parser</name>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jdk.min.version>1.8</jdk.min.version>
-		<msusel.version>1.1.1</msusel.version>
-	</properties>
+    <organization>
+        <name>Montana State University - Software Engineering Laboratory</name>
+        <url>https://msusel.github.io</url>
+    </organization>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>log4j-over-slf4j</artifactId>
-			<version>1.7.12</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.12</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.12</version>
-		</dependency>
-		<dependency>
-			<groupId>org.antlr</groupId>
-			<artifactId>antlr4-runtime</artifactId>
-			<version>4.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<scope>test</scope>
-			<version>1.10.19</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-			<version>4.12</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jdt</groupId>
-			<artifactId>org.eclipse.jdt.annotation</artifactId>
-			<version>2.1.0</version>
-		</dependency>
 		<dependency>
 			<groupId>edu.montana.gsoc.msusel</groupId>
 			<artifactId>msusel-codetree</artifactId>
@@ -141,10 +109,7 @@
 			</plugin>
 		</plugins>
 	</reporting>
-	<organization>
-		<name>Montana State University - Software Engineering Laboratory</name>
-		<url>https://msusel.github.io</url>
-	</organization>
+
 	<repositories>
 		<repository>
 			<id>msusel-maven-repo</id>
