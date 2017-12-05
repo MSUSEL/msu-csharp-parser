@@ -23,113 +23,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package edu.montana.gsoc.msusel.parsers;
+package edu.montana.gsoc.msusel.codetree.parsers;
 
 import java.util.List;
 import java.util.Stack;
 
+import edu.montana.gsoc.msusel.codetree.node.FileNode;
+import edu.montana.gsoc.msusel.codetree.node.TypeNode;
+import edu.montana.gsoc.msusel.codetree.node.StatementNode;
+import edu.montana.gsoc.msusel.codetree.parsers.csharp.CSharp6Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.eclipse.jdt.annotation.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.montana.gsoc.msusel.INode;
-import edu.montana.gsoc.msusel.metrics.loc.LoCCounter;
-import edu.montana.gsoc.msusel.node.FieldNode;
-import edu.montana.gsoc.msusel.node.FileNode;
-import edu.montana.gsoc.msusel.node.MethodNode;
-import edu.montana.gsoc.msusel.node.StatementNode;
-import edu.montana.gsoc.msusel.node.StatementType;
-import edu.montana.gsoc.msusel.node.TypeNode;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6BaseListener;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Accessor_declarationsContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Add_accessor_declarationContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Break_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Checked_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Class_bodyContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Class_definitionContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Compilation_unitContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Constructor_bodyContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Constructor_declaration2Context;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Constructor_declarationContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Constructor_declaratorContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Continue_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Declaration_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Delegate_declarationContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Delegate_definitionContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Delegate_typeContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Destructor_bodyContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Destructor_declarationContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Do_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Embedded_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Embedded_statement_unsafeContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Empty_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Enum_bodyContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Enum_definitionContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Enum_member_declarationContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Event_declaration2Context;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Event_declarationContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Expression_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Field_declaration2Context;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Fixed_parameterContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Fixed_parametersContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Fixed_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.For_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Foreach_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Formal_parameter_listContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Goto_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.IdentifierContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.If_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Indexer_declaration2Context;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Indexer_declarationContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Indexer_declaratorContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_bodyContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_definitionContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_event_declaration2Context;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_event_declarationContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_indexer_declaration2Context;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_indexer_declarationContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_method_declaration2Context;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_method_declarationContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_property_declaration2Context;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Interface_property_declarationContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Labeled_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Local_constant_declarationContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Lock_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Member_declaratorContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Member_nameContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Method_bodyContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Method_declaration2Context;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Method_declarationContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Method_headerContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Method_member_nameContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Namespace_bodyContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Namespace_declarationContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Namespace_member_declarationContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Namespace_nameContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Operator_bodyContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Operator_declaration2Context;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Operator_declarationContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Overloadable_binary_operatorContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Overloadable_operatorContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Overloadable_unary_operatorContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Parameter_arrayContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Property_declaration2Context;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Property_declarationContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Selection_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Simple_embedded_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Static_constructor_declarationContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Struct_bodyContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Struct_definitionContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Switch_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Throw_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Try_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Unary_operator_declaratorContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Unchecked_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Unsafe_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Using_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.While_statementContext;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Yield_statementContext;
+import edu.montana.gsoc.msusel.codetree.INode;
+import edu.montana.gsoc.msusel.codetree.metrics.loc.LoCCounter;
+import edu.montana.gsoc.msusel.codetree.node.FieldNode;
+import edu.montana.gsoc.msusel.codetree.node.MethodNode;
+import edu.montana.gsoc.msusel.codetree.node.StatementType;
+import edu.montana.gsoc.msusel.codetree.parsers.csharp.CSharp6BaseListener;
 
 /**
  * Using the parser, this class incrementally builds a CodeTree one file at a
@@ -159,7 +72,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
     /**
      * FileNode being built
      */
-    private final FileNode                    file;
+    private final FileNode file;
     /**
      * Line of Code Counter
      */
@@ -180,7 +93,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
     }
 
     /**
-     * Adds the LOC metric measurement to the given INode based on the text from
+     * Adds the LOC name measurement to the given INode based on the text from
      * the given ParserRuleContext
      * 
      * @param ctx
@@ -228,7 +141,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterAccessor_declarations(Accessor_declarationsContext ctx)
+    public void enterAccessor_declarations(CSharp6Parser.Accessor_declarationsContext ctx)
     {
         // TODO Auto-generated method stub
         super.enterAccessor_declarations(ctx);
@@ -238,7 +151,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterAdd_accessor_declaration(Add_accessor_declarationContext ctx)
+    public void enterAdd_accessor_declaration(CSharp6Parser.Add_accessor_declarationContext ctx)
     {
         // TODO Auto-generated method stub
         super.enterAdd_accessor_declaration(ctx);
@@ -248,7 +161,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterBreak_statement(Break_statementContext ctx)
+    public void enterBreak_statement(CSharp6Parser.Break_statementContext ctx)
     {
         createStatement(StatementType.Break, ctx);
         super.enterBreak_statement(ctx);
@@ -258,7 +171,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterChecked_statement(Checked_statementContext ctx)
+    public void enterChecked_statement(CSharp6Parser.Checked_statementContext ctx)
     {
         createStatement(StatementType.Checked, ctx);
         super.enterChecked_statement(ctx);
@@ -268,9 +181,9 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterClass_definition(final Class_definitionContext ctx)
+    public void enterClass_definition(final CSharp6Parser.Class_definitionContext ctx)
     {
-        final IdentifierContext itx = ctx.identifier();
+        final CSharp6Parser.IdentifierContext itx = ctx.identifier();
         String name = itx.getText();
         if (name == null || name.isEmpty())
             name = "UNKNOWN";
@@ -295,7 +208,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterCompilation_unit(Compilation_unitContext ctx)
+    public void enterCompilation_unit(CSharp6Parser.Compilation_unitContext ctx)
     {
         super.enterCompilation_unit(ctx);
     }
@@ -304,9 +217,9 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterConstructor_declaration2(final Constructor_declaration2Context ctx)
+    public void enterConstructor_declaration2(final CSharp6Parser.Constructor_declaration2Context ctx)
     {
-        final IdentifierContext ictx = ctx.identifier();
+        final CSharp6Parser.IdentifierContext ictx = ctx.identifier();
         String name = ictx.getText();
 
         name += "(" + getParams(ctx.formal_parameter_list()) + ")";
@@ -332,7 +245,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterContinue_statement(Continue_statementContext ctx)
+    public void enterContinue_statement(CSharp6Parser.Continue_statementContext ctx)
     {
         createStatement(StatementType.Continue, ctx);
         super.enterContinue_statement(ctx);
@@ -342,7 +255,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterDeclaration_statement(Declaration_statementContext ctx)
+    public void enterDeclaration_statement(CSharp6Parser.Declaration_statementContext ctx)
     {
         createStatement(StatementType.Declaration, ctx);
         super.enterDeclaration_statement(ctx);
@@ -352,9 +265,9 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterDelegate_declaration(Delegate_declarationContext ctx)
+    public void enterDelegate_declaration(CSharp6Parser.Delegate_declarationContext ctx)
     {
-        final IdentifierContext mmctx = ctx.identifier();
+        final CSharp6Parser.IdentifierContext mmctx = ctx.identifier();
         String name = mmctx == null ? "<DELEGATE>" : mmctx.getText();
 
         name += "(" + getParams(ctx.formal_parameter_list()) + ")";
@@ -378,7 +291,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterDelegate_definition(final Delegate_definitionContext ctx)
+    public void enterDelegate_definition(final CSharp6Parser.Delegate_definitionContext ctx)
     {
         // final String name = ctx.identifier() == null ? "" :
         // ctx.identifier().getText() ;
@@ -399,7 +312,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterDelegate_type(Delegate_typeContext ctx)
+    public void enterDelegate_type(CSharp6Parser.Delegate_typeContext ctx)
     {
         // TODO Auto-generated method stub
         super.enterDelegate_type(ctx);
@@ -409,7 +322,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterDestructor_declaration(Destructor_declarationContext ctx)
+    public void enterDestructor_declaration(CSharp6Parser.Destructor_declarationContext ctx)
     {
         String name = "<DESTRUCTOR>";
 
@@ -436,7 +349,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterDo_statement(Do_statementContext ctx)
+    public void enterDo_statement(CSharp6Parser.Do_statementContext ctx)
     {
         createStatement(StatementType.Do, ctx);
         super.enterDo_statement(ctx);
@@ -446,7 +359,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterEmbedded_statement(Embedded_statementContext ctx)
+    public void enterEmbedded_statement(CSharp6Parser.Embedded_statementContext ctx)
     {
         createStatement(StatementType.Embedded, ctx);
         super.enterEmbedded_statement(ctx);
@@ -456,7 +369,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterEmbedded_statement_unsafe(Embedded_statement_unsafeContext ctx)
+    public void enterEmbedded_statement_unsafe(CSharp6Parser.Embedded_statement_unsafeContext ctx)
     {
         createStatement(StatementType.UnsafeEmbedded, ctx);
         super.enterEmbedded_statement_unsafe(ctx);
@@ -466,7 +379,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterEmpty_statement(Empty_statementContext ctx)
+    public void enterEmpty_statement(CSharp6Parser.Empty_statementContext ctx)
     {
         createStatement(StatementType.Empty, ctx);
         super.enterEmpty_statement(ctx);
@@ -476,7 +389,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterEnum_definition(final Enum_definitionContext ctx)
+    public void enterEnum_definition(final CSharp6Parser.Enum_definitionContext ctx)
     {
         final String name = ctx.identifier() == null ? "" : ctx.identifier().getText();
         final String fullName = namespaces.isEmpty() ? name : namespaces.peek() + "." + name;
@@ -500,7 +413,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterEnum_member_declaration(Enum_member_declarationContext ctx)
+    public void enterEnum_member_declaration(CSharp6Parser.Enum_member_declarationContext ctx)
     {
         String name = ctx.identifier() == null ? "" : ctx.identifier().getText();
         int start = ctx.getStart().getLine();
@@ -521,7 +434,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterExpression_statement(Expression_statementContext ctx)
+    public void enterExpression_statement(CSharp6Parser.Expression_statementContext ctx)
     {
         createStatement(StatementType.Expression, ctx);
         super.enterExpression_statement(ctx);
@@ -531,7 +444,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterFixed_statement(Fixed_statementContext ctx)
+    public void enterFixed_statement(CSharp6Parser.Fixed_statementContext ctx)
     {
         createStatement(StatementType.Fixed, ctx);
         super.enterFixed_statement(ctx);
@@ -541,7 +454,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterFor_statement(For_statementContext ctx)
+    public void enterFor_statement(CSharp6Parser.For_statementContext ctx)
     {
         createStatement(StatementType.For, ctx);
         super.enterFor_statement(ctx);
@@ -551,7 +464,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterForeach_statement(Foreach_statementContext ctx)
+    public void enterForeach_statement(CSharp6Parser.Foreach_statementContext ctx)
     {
         createStatement(StatementType.Foreach, ctx);
         super.enterForeach_statement(ctx);
@@ -561,7 +474,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterGoto_statement(Goto_statementContext ctx)
+    public void enterGoto_statement(CSharp6Parser.Goto_statementContext ctx)
     {
         createStatement(StatementType.Goto, ctx);
         super.enterGoto_statement(ctx);
@@ -571,7 +484,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterIf_statement(If_statementContext ctx)
+    public void enterIf_statement(CSharp6Parser.If_statementContext ctx)
     {
         createStatement(StatementType.If, ctx);
         super.enterIf_statement(ctx);
@@ -581,7 +494,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterIndexer_declaration(Indexer_declarationContext ctx)
+    public void enterIndexer_declaration(CSharp6Parser.Indexer_declarationContext ctx)
     {
         // TODO Auto-generated method stub
         super.enterIndexer_declaration(ctx);
@@ -591,7 +504,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterIndexer_declaration2(Indexer_declaration2Context ctx)
+    public void enterIndexer_declaration2(CSharp6Parser.Indexer_declaration2Context ctx)
     {
         // TODO Auto-generated method stub
         super.enterIndexer_declaration2(ctx);
@@ -601,7 +514,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterInterface_definition(final Interface_definitionContext ctx)
+    public void enterInterface_definition(final CSharp6Parser.Interface_definitionContext ctx)
     {
         final String name = ctx.identifier() == null ? "" : ctx.identifier().getText();
         final String fullName = namespaces.isEmpty() ? name : namespaces.peek() + "." + name;
@@ -626,7 +539,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitInterface_definition(final Interface_definitionContext ctx)
+    public void exitInterface_definition(final CSharp6Parser.Interface_definitionContext ctx)
     {
 
         super.exitInterface_definition(ctx);
@@ -636,7 +549,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterInterface_method_declaration2(final Interface_method_declaration2Context ctx)
+    public void enterInterface_method_declaration2(final CSharp6Parser.Interface_method_declaration2Context ctx)
     {
         String name = ctx.identifier() == null ? "" : ctx.identifier().getText();
         name = name + " (" + getParams(ctx.formal_parameter_list()) + ")";
@@ -658,7 +571,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterLabeled_statement(Labeled_statementContext ctx)
+    public void enterLabeled_statement(CSharp6Parser.Labeled_statementContext ctx)
     {
         createStatement(StatementType.Labeled, ctx);
         super.enterLabeled_statement(ctx);
@@ -668,7 +581,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterLock_statement(Lock_statementContext ctx)
+    public void enterLock_statement(CSharp6Parser.Lock_statementContext ctx)
     {
         createStatement(StatementType.Lock, ctx);
         super.enterLock_statement(ctx);
@@ -678,7 +591,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterMember_declarator(Member_declaratorContext ctx)
+    public void enterMember_declarator(CSharp6Parser.Member_declaratorContext ctx)
     {
         // TODO Auto-generated method stub
         super.enterMember_declarator(ctx);
@@ -688,9 +601,9 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterMethod_declaration2(final Method_declaration2Context ctx)
+    public void enterMethod_declaration2(final CSharp6Parser.Method_declaration2Context ctx)
     {
-        final Method_member_nameContext mmctx = ctx.method_member_name();
+        final CSharp6Parser.Method_member_nameContext mmctx = ctx.method_member_name();
         String name = mmctx == null ? "<METHOD>" : mmctx.getText();
 
         name += "(" + getParams(ctx.formal_parameter_list()) + ")";
@@ -715,13 +628,13 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterNamespace_declaration(final Namespace_declarationContext ctx)
+    public void enterNamespace_declaration(final CSharp6Parser.Namespace_declarationContext ctx)
     {
-        final List<IdentifierContext> ids = ctx.qualified_identifier().identifier();
+        final List<CSharp6Parser.IdentifierContext> ids = ctx.qualified_identifier().identifier();
         final StringBuilder builder = new StringBuilder();
 
         boolean first = true;
-        for (final IdentifierContext idx : ids)
+        for (final CSharp6Parser.IdentifierContext idx : ids)
         {
             if (!first)
             {
@@ -744,7 +657,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterNamespace_member_declaration(Namespace_member_declarationContext ctx)
+    public void enterNamespace_member_declaration(CSharp6Parser.Namespace_member_declarationContext ctx)
     {
         // TODO Auto-generated method stub
         super.enterNamespace_member_declaration(ctx);
@@ -754,7 +667,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterNamespace_name(Namespace_nameContext ctx)
+    public void enterNamespace_name(CSharp6Parser.Namespace_nameContext ctx)
     {
         // TODO Auto-generated method stub
         super.enterNamespace_name(ctx);
@@ -764,7 +677,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterOperator_declaration(Operator_declarationContext ctx)
+    public void enterOperator_declaration(CSharp6Parser.Operator_declarationContext ctx)
     {
         String name = "<OPERATOR>";
         if (ctx.operator_declarator() != null)
@@ -773,7 +686,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
             {
                 if (ctx.operator_declarator().binary_operator_declarator().overloadable_binary_operator() != null)
                 {
-                    Overloadable_binary_operatorContext oboc = ctx.operator_declarator()
+                    CSharp6Parser.Overloadable_binary_operatorContext oboc = ctx.operator_declarator()
                             .binary_operator_declarator()
                             .overloadable_binary_operator();
                     if (oboc.OP_EQ() != null)
@@ -857,7 +770,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
                 }
                 else if (ctx.operator_declarator().unary_operator_declarator().overloadable_unary_operator() != null)
                 {
-                    Overloadable_unary_operatorContext ouoc = ctx.operator_declarator()
+                    CSharp6Parser.Overloadable_unary_operatorContext ouoc = ctx.operator_declarator()
                             .unary_operator_declarator()
                             .overloadable_unary_operator();
                     if (ouoc.OP_DEC() != null)
@@ -916,7 +829,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterOperator_declaration2(final Operator_declaration2Context ctx)
+    public void enterOperator_declaration2(final CSharp6Parser.Operator_declaration2Context ctx)
     {
         String op = "<OPERATOR>";
         if (ctx.OPERATOR() != null)
@@ -949,7 +862,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterOverloadable_binary_operator(Overloadable_binary_operatorContext ctx)
+    public void enterOverloadable_binary_operator(CSharp6Parser.Overloadable_binary_operatorContext ctx)
     {
         // TODO Auto-generated method stub
         super.enterOverloadable_binary_operator(ctx);
@@ -959,7 +872,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterOverloadable_operator(Overloadable_operatorContext ctx)
+    public void enterOverloadable_operator(CSharp6Parser.Overloadable_operatorContext ctx)
     {
         // TODO Auto-generated method stub
         super.enterOverloadable_operator(ctx);
@@ -969,7 +882,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterOverloadable_unary_operator(Overloadable_unary_operatorContext ctx)
+    public void enterOverloadable_unary_operator(CSharp6Parser.Overloadable_unary_operatorContext ctx)
     {
         // TODO Auto-generated method stub
         super.enterOverloadable_unary_operator(ctx);
@@ -979,7 +892,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterLocal_constant_declaration(Local_constant_declarationContext ctx)
+    public void enterLocal_constant_declaration(CSharp6Parser.Local_constant_declarationContext ctx)
     {
         // TODO Auto-generated method stub
         super.enterLocal_constant_declaration(ctx);
@@ -989,7 +902,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitMethod_declaration(Method_declarationContext ctx)
+    public void exitMethod_declaration(CSharp6Parser.Method_declarationContext ctx)
     {
         // TODO Auto-generated method stub
         super.exitMethod_declaration(ctx);
@@ -999,7 +912,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitConstructor_declaration(Constructor_declarationContext ctx)
+    public void exitConstructor_declaration(CSharp6Parser.Constructor_declarationContext ctx)
     {
         // TODO Auto-generated method stub
         super.exitConstructor_declaration(ctx);
@@ -1009,7 +922,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitConstructor_body(Constructor_bodyContext ctx)
+    public void exitConstructor_body(CSharp6Parser.Constructor_bodyContext ctx)
     {
         super.exitConstructor_body(ctx);
         if (!methods.isEmpty())
@@ -1020,7 +933,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterStatic_constructor_declaration(Static_constructor_declarationContext ctx)
+    public void enterStatic_constructor_declaration(CSharp6Parser.Static_constructor_declarationContext ctx)
     {
         // TODO Auto-generated method stub
         super.enterStatic_constructor_declaration(ctx);
@@ -1030,7 +943,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitDestructor_declaration(Destructor_declarationContext ctx)
+    public void exitDestructor_declaration(CSharp6Parser.Destructor_declarationContext ctx)
     {
         // TODO Auto-generated method stub
         super.exitDestructor_declaration(ctx);
@@ -1039,7 +952,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
     /**
      * {@inheritDoc}
      */
-    public void exitDestructor_body(Destructor_bodyContext ctx)
+    public void exitDestructor_body(CSharp6Parser.Destructor_bodyContext ctx)
     {
         super.exitDestructor_body(ctx);
         if (!methods.isEmpty())
@@ -1050,7 +963,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitInterface_method_declaration(Interface_method_declarationContext ctx)
+    public void exitInterface_method_declaration(CSharp6Parser.Interface_method_declarationContext ctx)
     {
         // TODO Auto-generated method stub
         super.exitInterface_method_declaration(ctx);
@@ -1060,7 +973,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterInterface_property_declaration(Interface_property_declarationContext ctx)
+    public void enterInterface_property_declaration(CSharp6Parser.Interface_property_declarationContext ctx)
     {
         String name = ctx.identifier() == null ? "" : ctx.identifier().getText();
         int start = ctx.getStart().getLine();
@@ -1081,7 +994,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitInterface_property_declaration(Interface_property_declarationContext ctx)
+    public void exitInterface_property_declaration(CSharp6Parser.Interface_property_declarationContext ctx)
     {
         // TODO Auto-generated method stub
         super.exitInterface_property_declaration(ctx);
@@ -1091,7 +1004,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitDelegate_declaration(Delegate_declarationContext ctx)
+    public void exitDelegate_declaration(CSharp6Parser.Delegate_declarationContext ctx)
     {
         super.exitDelegate_declaration(ctx);
         if (!methods.isEmpty())
@@ -1102,7 +1015,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterField_declaration2(Field_declaration2Context ctx)
+    public void enterField_declaration2(CSharp6Parser.Field_declaration2Context ctx)
     {
         super.enterField_declaration2(ctx);
     }
@@ -1111,7 +1024,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitConstructor_declaration2(Constructor_declaration2Context ctx)
+    public void exitConstructor_declaration2(CSharp6Parser.Constructor_declaration2Context ctx)
     {
         // TODO Auto-generated method stub
         super.exitConstructor_declaration2(ctx);
@@ -1121,7 +1034,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitMethod_declaration2(Method_declaration2Context ctx)
+    public void exitMethod_declaration2(CSharp6Parser.Method_declaration2Context ctx)
     {
         // TODO Auto-generated method stub
         super.exitMethod_declaration2(ctx);
@@ -1131,7 +1044,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitInterface_method_declaration2(Interface_method_declaration2Context ctx)
+    public void exitInterface_method_declaration2(CSharp6Parser.Interface_method_declaration2Context ctx)
     {
         // TODO Auto-generated method stub
         super.exitInterface_method_declaration2(ctx);
@@ -1141,7 +1054,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterInterface_property_declaration2(Interface_property_declaration2Context ctx)
+    public void enterInterface_property_declaration2(CSharp6Parser.Interface_property_declaration2Context ctx)
     {
         String name = ctx.identifier() == null ? "" : ctx.identifier().getText();
         int start = ctx.getStart().getLine();
@@ -1162,7 +1075,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitInterface_property_declaration2(Interface_property_declaration2Context ctx)
+    public void exitInterface_property_declaration2(CSharp6Parser.Interface_property_declaration2Context ctx)
     {
         // TODO Auto-generated method stub
         super.exitInterface_property_declaration2(ctx);
@@ -1172,7 +1085,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterProperty_declaration(Property_declarationContext ctx)
+    public void enterProperty_declaration(CSharp6Parser.Property_declarationContext ctx)
     {
         String name = ctx.member_name().toString();
         int start = ctx.getStart().getLine();
@@ -1194,10 +1107,10 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterMethod_declaration(Method_declarationContext ctx)
+    public void enterMethod_declaration(CSharp6Parser.Method_declarationContext ctx)
     {
-        final Method_headerContext mhcx = ctx.method_header();
-        final Member_nameContext mmctx = mhcx.member_name();
+        final CSharp6Parser.Method_headerContext mhcx = ctx.method_header();
+        final CSharp6Parser.Member_nameContext mmctx = mhcx.member_name();
         String name = mmctx == null ? "<METHOD>" : mmctx.getText();
 
         name += "(" + getParams(mhcx.formal_parameter_list()) + ")";
@@ -1222,7 +1135,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterEvent_declaration(Event_declarationContext ctx)
+    public void enterEvent_declaration(CSharp6Parser.Event_declarationContext ctx)
     {
         // TODO Auto-generated method stub
         super.enterEvent_declaration(ctx);
@@ -1232,7 +1145,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterIndexer_declarator(Indexer_declaratorContext ctx)
+    public void enterIndexer_declarator(CSharp6Parser.Indexer_declaratorContext ctx)
     {
         // TODO Auto-generated method stub
         super.enterIndexer_declarator(ctx);
@@ -1242,9 +1155,9 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterConstructor_declaration(Constructor_declarationContext ctx)
+    public void enterConstructor_declaration(CSharp6Parser.Constructor_declarationContext ctx)
     {
-        final Constructor_declaratorContext mhcx = ctx.constructor_declarator();
+        final CSharp6Parser.Constructor_declaratorContext mhcx = ctx.constructor_declarator();
         String name = "<INIT>";
 
         name += "(" + getParams(mhcx.formal_parameter_list()) + ")";
@@ -1268,7 +1181,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterInterface_method_declaration(Interface_method_declarationContext ctx)
+    public void enterInterface_method_declaration(CSharp6Parser.Interface_method_declarationContext ctx)
     {
         String name = ctx.identifier() == null ? "<METHOD>"
                 : ctx.identifier() == null ? "" : ctx.identifier().getText();
@@ -1293,9 +1206,9 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterInterface_event_declaration(Interface_event_declarationContext ctx)
+    public void enterInterface_event_declaration(CSharp6Parser.Interface_event_declarationContext ctx)
     {
-        final IdentifierContext ix = ctx.identifier();
+        final CSharp6Parser.IdentifierContext ix = ctx.identifier();
         String name = ix == null ? "<METHOD>" : ix.getText();
 
         name += "(" + ")";
@@ -1320,7 +1233,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterInterface_indexer_declaration(Interface_indexer_declarationContext ctx)
+    public void enterInterface_indexer_declaration(CSharp6Parser.Interface_indexer_declarationContext ctx)
     {
         super.enterInterface_indexer_declaration(ctx);
     }
@@ -1329,7 +1242,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterEvent_declaration2(Event_declaration2Context ctx)
+    public void enterEvent_declaration2(CSharp6Parser.Event_declaration2Context ctx)
     {
 
         super.enterEvent_declaration2(ctx);
@@ -1339,7 +1252,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterInterface_event_declaration2(Interface_event_declaration2Context ctx)
+    public void enterInterface_event_declaration2(CSharp6Parser.Interface_event_declaration2Context ctx)
     {
         // TODO Auto-generated method stub
         super.enterInterface_event_declaration2(ctx);
@@ -1349,7 +1262,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterInterface_indexer_declaration2(Interface_indexer_declaration2Context ctx)
+    public void enterInterface_indexer_declaration2(CSharp6Parser.Interface_indexer_declaration2Context ctx)
     {
         // TODO Auto-generated method stub
         super.enterInterface_indexer_declaration2(ctx);
@@ -1359,7 +1272,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterProperty_declaration2(Property_declaration2Context ctx)
+    public void enterProperty_declaration2(CSharp6Parser.Property_declaration2Context ctx)
     {
         String name = "<PROPERTY>";
         if (ctx.member_name() != null)
@@ -1389,7 +1302,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterSelection_statement(Selection_statementContext ctx)
+    public void enterSelection_statement(CSharp6Parser.Selection_statementContext ctx)
     {
         createStatement(StatementType.Selection, ctx);
         super.enterSelection_statement(ctx);
@@ -1399,7 +1312,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterSimple_embedded_statement(Simple_embedded_statementContext ctx)
+    public void enterSimple_embedded_statement(CSharp6Parser.Simple_embedded_statementContext ctx)
     {
         createStatement(StatementType.SimpleEmbedded, ctx);
         super.enterSimple_embedded_statement(ctx);
@@ -1409,7 +1322,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterStruct_definition(final Struct_definitionContext ctx)
+    public void enterStruct_definition(final CSharp6Parser.Struct_definitionContext ctx)
     {
         final String name = ctx.identifier() == null ? "<STRUCT>" : ctx.identifier().getText();
         int start = 1;
@@ -1433,7 +1346,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterSwitch_statement(Switch_statementContext ctx)
+    public void enterSwitch_statement(CSharp6Parser.Switch_statementContext ctx)
     {
         createStatement(StatementType.Switch, ctx);
         super.enterSwitch_statement(ctx);
@@ -1443,7 +1356,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterThrow_statement(Throw_statementContext ctx)
+    public void enterThrow_statement(CSharp6Parser.Throw_statementContext ctx)
     {
         createStatement(StatementType.Throw, ctx);
         super.enterThrow_statement(ctx);
@@ -1453,7 +1366,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterTry_statement(Try_statementContext ctx)
+    public void enterTry_statement(CSharp6Parser.Try_statementContext ctx)
     {
         createStatement(StatementType.Try, ctx);
         super.enterTry_statement(ctx);
@@ -1463,7 +1376,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterUnary_operator_declarator(Unary_operator_declaratorContext ctx)
+    public void enterUnary_operator_declarator(CSharp6Parser.Unary_operator_declaratorContext ctx)
     {
         // TODO Auto-generated method stub
         super.enterUnary_operator_declarator(ctx);
@@ -1473,7 +1386,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterUnchecked_statement(Unchecked_statementContext ctx)
+    public void enterUnchecked_statement(CSharp6Parser.Unchecked_statementContext ctx)
     {
         createStatement(StatementType.UnChecked, ctx);
         super.enterUnchecked_statement(ctx);
@@ -1483,7 +1396,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterUnsafe_statement(Unsafe_statementContext ctx)
+    public void enterUnsafe_statement(CSharp6Parser.Unsafe_statementContext ctx)
     {
         createStatement(StatementType.Unsafe, ctx);
         super.enterUnsafe_statement(ctx);
@@ -1493,7 +1406,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterUsing_statement(Using_statementContext ctx)
+    public void enterUsing_statement(CSharp6Parser.Using_statementContext ctx)
     {
         createStatement(StatementType.Using, ctx);
         super.enterUsing_statement(ctx);
@@ -1503,7 +1416,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterWhile_statement(While_statementContext ctx)
+    public void enterWhile_statement(CSharp6Parser.While_statementContext ctx)
     {
         createStatement(StatementType.While, ctx);
         super.enterWhile_statement(ctx);
@@ -1513,7 +1426,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void enterYield_statement(Yield_statementContext ctx)
+    public void enterYield_statement(CSharp6Parser.Yield_statementContext ctx)
     {
         createStatement(StatementType.Yield, ctx);
         super.enterYield_statement(ctx);
@@ -1523,7 +1436,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitClass_body(final Class_bodyContext ctx)
+    public void exitClass_body(final CSharp6Parser.Class_bodyContext ctx)
     {
         super.exitClass_body(ctx);
         if (!types.isEmpty())
@@ -1534,7 +1447,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitDelegate_type(Delegate_typeContext ctx)
+    public void exitDelegate_type(CSharp6Parser.Delegate_typeContext ctx)
     {
         // TODO Auto-generated method stub
         super.exitDelegate_type(ctx);
@@ -1544,7 +1457,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitEnum_body(final Enum_bodyContext ctx)
+    public void exitEnum_body(final CSharp6Parser.Enum_bodyContext ctx)
     {
         super.exitEnum_body(ctx);
         if (!types.isEmpty())
@@ -1555,7 +1468,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitInterface_body(final Interface_bodyContext ctx)
+    public void exitInterface_body(final CSharp6Parser.Interface_bodyContext ctx)
     {
         super.exitInterface_body(ctx);
         if (!types.isEmpty())
@@ -1566,7 +1479,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitMethod_body(final Method_bodyContext ctx)
+    public void exitMethod_body(final CSharp6Parser.Method_bodyContext ctx)
     {
         super.exitMethod_body(ctx);
         if (!methods.isEmpty())
@@ -1577,7 +1490,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitNamespace_body(final Namespace_bodyContext ctx)
+    public void exitNamespace_body(final CSharp6Parser.Namespace_bodyContext ctx)
     {
         super.exitNamespace_body(ctx);
         if (!namespaces.isEmpty())
@@ -1588,7 +1501,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitOperator_body(final Operator_bodyContext ctx)
+    public void exitOperator_body(final CSharp6Parser.Operator_bodyContext ctx)
     {
         super.exitOperator_body(ctx);
         if (!methods.isEmpty())
@@ -1599,7 +1512,7 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      * {@inheritDoc}
      */
     @Override
-    public void exitStruct_body(final Struct_bodyContext ctx)
+    public void exitStruct_body(final CSharp6Parser.Struct_bodyContext ctx)
     {
         super.exitStruct_body(ctx);
         if (!types.isEmpty())
@@ -1613,24 +1526,24 @@ public class CSharpCodeTreeBuilder extends CSharp6BaseListener {
      *            Context containing the parameter list.
      * @return Comma-delimited String of method parameters.
      */
-    private String getParams(final Formal_parameter_listContext ctx)
+    private String getParams(final CSharp6Parser.Formal_parameter_listContext ctx)
     {
         String retVal = "";
         if (ctx != null)
         {
-            final Fixed_parametersContext fpc = ctx.fixed_parameters();
+            final CSharp6Parser.Fixed_parametersContext fpc = ctx.fixed_parameters();
             if (fpc != null)
             {
                 final StringBuilder builder = new StringBuilder();
                 String type = null;
-                for (final Fixed_parameterContext pc : fpc.fixed_parameter())
+                for (final CSharp6Parser.Fixed_parameterContext pc : fpc.fixed_parameter())
                 {
                     type = pc.type().getText();
                     builder.append(type + ", ");
                 }
                 retVal = builder.toString();
             }
-            final Parameter_arrayContext pac = ctx.parameter_array();
+            final CSharp6Parser.Parameter_arrayContext pac = ctx.parameter_array();
             if (pac != null)
             {
                 String type = "";

@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package edu.montana.gsoc.msusel.parsers;
+package edu.montana.gsoc.msusel.codetree.parsers;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -36,6 +36,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import edu.montana.gsoc.msusel.codetree.CodeTree;
+import edu.montana.gsoc.msusel.codetree.node.FileNode;
+import edu.montana.gsoc.msusel.codetree.parsers.csharp.CSharp6PreProcessor;
+import edu.montana.gsoc.msusel.codetree.parsers.csharp.CSharp6Lexer;
+import edu.montana.gsoc.msusel.codetree.parsers.csharp.CSharp6Parser;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
@@ -44,14 +49,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
-
-import edu.montana.gsoc.msusel.CodeTree;
-import edu.montana.gsoc.msusel.node.FileNode;
-import edu.montana.gsoc.msusel.parsers.CSharpCodeTreeBuilder;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Lexer;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6PreProcessor;
-import edu.montana.gsoc.msusel.parsers.csharp.CSharp6Parser.Compilation_unitContext;
 
 /**
  * ParserTest -
@@ -131,7 +128,7 @@ public class CSharpParserTest {
                         final FileNode node = FileNode.builder(file).create();
                         final CSharpParserTest pt = new CSharpParserTest();
                         final CSharp6Parser parser = pt.loadFile(file);
-                        final Compilation_unitContext cuContext = parser.compilation_unit();
+                        final CSharp6Parser.Compilation_unitContext cuContext = parser.compilation_unit();
                         final ParseTreeWalker walker = new ParseTreeWalker();
                         final CSharpCodeTreeBuilder listener = new CSharpCodeTreeBuilder(node);
                         walker.walk(listener, cuContext);
